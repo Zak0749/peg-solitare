@@ -1,29 +1,106 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"peg-solitare/moves"
-	"peg-solitare/starting"
-	"peg-solitare/types"
-	"peg-solitate/pretify"
+	"main/moves"
+	"main/starting"
+	"main/types"
+	"os"
 )
 
-func main() {
-	jobs := make(chan types.Board, 1)
-	results := make(chan []types.Board, 1)
+func pretify(board types.Board) string {
+	returning := "___________________\n"
 
-	go worker(jobs, results)
+	for _, column := range board {
+		returning = returning + "|"
+		for x, val := range column {
+			if val.Value {
+				returning = returning + "●"
+			} else if val.Exists {
+				returning = returning + "○"
+			} else {
+				returning = returning + " "
+			}
 
-	for i := 0; i < 1; i++ {
-		jobs <- starting.Board
+			if x != 8 {
+				returning = returning + " "
+			}
+		}
+
+		returning = returning + "|\n"
 	}
 
-	for j := 0; j < 1; j++ {
-		res := <-results
-		for _, board := range res {
-			fmt.Println(pretify.Board(board))
+	returning += "‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾"
+
+	return returning
+}
+
+func UniqueNonEmptyElementsOf(s []types.Board) []types.Board {
+	unique := make(map[types.Board]bool, len(s))
+	var us []types.Board
+	for _, elem := range s {
+		if !unique[elem] {
+			us = append(us, elem)
+			unique[elem] = true
 		}
 	}
+
+	return us
+}
+
+func computeLayer(boards []types.Board, final chan<- []types.Board) {
+	layer := []types.Board{}
+	jobs := make(chan types.Board, len(boards))
+	results := make(chan []types.Board, len(boards))
+
+	go worker(jobs, results)
+	go worker(jobs, results)
+	go worker(jobs, results)
+	go worker(jobs, results)
+	go worker(jobs, results)
+	go worker(jobs, results)
+	go worker(jobs, results)
+	go worker(jobs, results)
+	go worker(jobs, results)
+	go worker(jobs, results)
+	go worker(jobs, results)
+	go worker(jobs, results)
+
+	for _, board := range boards {
+		jobs <- board
+	}
+
+	close(jobs)
+
+	for j := 0; j < len(boards); j++ {
+		res := <-results
+		layer = append(layer, res...)
+	}
+	close(results)
+
+	if len(layer) == 0 {
+		return
+	}
+
+	final <- layer
+
+	go computeLayer(UniqueNonEmptyElementsOf(layer), final)
+}
+
+func main() {
+	data := [][]types.Board{}
+	final := make(chan []types.Board, 44)
+	go computeLayer([]types.Board{starting.Board}, final)
+	for cur := range final {
+		fmt.Println(len(data)+1, "layers computed")
+		data = append(data, cur)
+	}
+	close(final)
+
+	file, _ := json.MarshalIndent(data, "", " ")
+
+	os.WriteFile("test.json", file, 0644)
 }
 
 func worker(jobs <-chan types.Board, results chan<- []types.Board) {

@@ -1,6 +1,6 @@
 package starting
 
-import "peg-solitare/types"
+import "main/types"
 
 var Board types.Board = types.Board{
 	{

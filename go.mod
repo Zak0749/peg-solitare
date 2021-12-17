@@ -1,3 +1,3 @@
-module peg-solitare
+module main
 
 go 1.17

@@ -1,8 +1,8 @@
 package moves
 
 import (
-	"peg-solitare/deep"
-	"peg-solitare/types"
+	"main/deep"
+	"main/types"
 )
 
 func GetMoves(board types.Board) []types.Board {

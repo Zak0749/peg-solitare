@@ -1,6 +1,6 @@
 package deep
 
-import "peg-solitare/types"
+import "main/types"
 
 func Copy(board types.Board) types.Board {
 	var newBoard types.Board
