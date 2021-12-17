@@ -2,7 +2,7 @@ package pretify
 
 import "peg-solitare/types"
 
-func Pretify(board types.Board) string {
+func Board(board types.Board) string {
 	returning := "___________________\n"
 
 	for _, column := range board {
@@ -24,7 +24,7 @@ func Pretify(board types.Board) string {
 		returning = returning + "|\n"
 	}
 
-	returning += "-------------------"
+	returning += "‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾"
 
 	return returning
 }

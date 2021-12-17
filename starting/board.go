@@ -1,8 +1,8 @@
-package startingboard
+package starting
 
 import "peg-solitare/types"
 
-var StartingBoard types.Board = types.Board{
+var Board types.Board = types.Board{
 	{
 		{Exists: false, Value: false},
 		{Exists: false, Value: false},
